@@ -1,0 +1,6 @@
+{
+  "name": "AI Host Studio",
+  "description": "Platform AI Livestreaming Otonom untuk membuat, mengonfigurasi, dan mengoperasikan virtual host AI dengan Firebase Firestore dan Gemini AI.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

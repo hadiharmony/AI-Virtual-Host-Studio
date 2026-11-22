@@ -1,0 +1,291 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Per-user workspace settings, active character pointer, theme mode, and safety cost/request limits.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Firebase Auth UID of the owner." },
+        "displayName": { "type": "string", "description": "Owner display name." },
+        "email": { "type": "string", "description": "Owner email address (private to owner)." },
+        "activeCharacterId": { "type": "string", "description": "Currently active virtual host character document ID." },
+        "darkThemeMode": { "type": "string", "enum": ["SYSTEM", "DARK", "LIGHT"] },
+        "dailyCostLimitUsd": { "type": "number", "description": "Configurable daily API cost guard in USD." },
+        "maxDailyRequests": { "type": "integer", "description": "Configurable daily AI request rate cap." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()." }
+      },
+      "required": ["userId", "displayName", "darkThemeMode", "dailyCostLimitUsd", "maxDailyRequests", "createdAt", "updatedAt"]
+    },
+    "VirtualHostCharacter": {
+      "title": "VirtualHostCharacter",
+      "description": "Configurable AI virtual host character with appearance metadata separated from avatar provider registration.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "name": { "type": "string" },
+        "displayName": { "type": "string" },
+        "biography": { "type": "string" },
+        "personalityDescription": { "type": "string" },
+        "speakingStyle": { "type": "string" },
+        "language": { "type": "string" },
+        "voiceSelection": { "type": "string" },
+        "avatarProvider": { "type": "string", "enum": ["NONE", "HEYGEN", "BYTEPLUS", "CUSTOM"] },
+        "avatarReferenceId": { "type": "string" },
+        "avatarRegistered": { "type": "boolean" },
+        "appearanceDescription": { "type": "string" },
+        "portraitAssetKey": { "type": "string", "enum": ["aria", "bima", "custom"] },
+        "customImageUri": { "type": "string" },
+        "backgroundPreference": { "type": "string" },
+        "active": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "name", "displayName", "language", "voiceSelection", "avatarProvider", "avatarRegistered", "portraitAssetKey", "active", "createdAt", "updatedAt"]
+    },
+    "AiBrainConfig": {
+      "title": "AiBrainConfig",
+      "description": "Per-character LLM, personality preset, system prompt, memory, response style, and moderation configuration.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "characterId": { "type": "string" },
+        "llmProvider": { "type": "string", "enum": ["GEMINI_AI_LOGIC", "CUSTOM_FUTURE"] },
+        "modelName": { "type": "string", "enum": ["gemini-3.8-flash", "gemini-3.5-flash-lite"] },
+        "personalityPreset": { "type": "string", "enum": ["FRIENDLY", "HUMOROUS", "PROFESSIONAL", "CURIOUS", "EDUCATIONAL", "MYSTERIOUS", "ENTERTAINING"] },
+        "customPersonalityInstructions": { "type": "string" },
+        "systemPrompt": { "type": "string" },
+        "conversationContext": { "type": "string" },
+        "memorySummary": { "type": "string" },
+        "responseLength": { "type": "string", "enum": ["SHORT", "MEDIUM", "DETAILED"] },
+        "contentRestrictions": { "type": "string" },
+        "moderationRules": { "type": "string" },
+        "temperature": { "type": "number" },
+        "admitUncertainty": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "characterId", "llmProvider", "modelName", "personalityPreset", "responseLength", "temperature", "admitUncertainty", "createdAt", "updatedAt"]
+    },
+    "KnowledgeDocument": {
+      "title": "KnowledgeDocument",
+      "description": "Persistent knowledge base document with honest indexing status for modular RAG grounding.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "category": { "type": "string", "enum": ["UMUM", "SEJARAH", "SAINS", "TEKNOLOGI", "EDUKASI", "PRODUK", "MISTERI", "HIBURAN"] },
+        "sourceType": { "type": "string", "enum": ["MANUAL", "TEXT_FILE", "PDF_FILE", "REFERENCE_URL", "TOPIC_NOTE"] },
+        "sourceInfo": { "type": "string" },
+        "content": { "type": "string" },
+        "chunkCount": { "type": "integer" },
+        "processingStatus": { "type": "string", "enum": ["PROCESSING", "INDEXED", "FAILED"] },
+        "errorMessage": { "type": "string" },
+        "verified": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "title", "category", "sourceType", "chunkCount", "processingStatus", "verified", "createdAt", "updatedAt"]
+    },
+    "KnowledgeChunk": {
+      "title": "KnowledgeChunk",
+      "description": "Indexed chunk derived from a KnowledgeDocument for keyword/BM25-style modular RAG retrieval.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "documentId": { "type": "string" },
+        "documentTitle": { "type": "string" },
+        "category": { "type": "string" },
+        "chunkIndex": { "type": "integer" },
+        "text": { "type": "string" },
+        "keywords": { "type": "array" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "documentId", "documentTitle", "category", "chunkIndex", "text", "keywords", "createdAt"]
+    },
+    "ConversationSession": {
+      "title": "ConversationSession",
+      "description": "Persistent conversation testing or livestream dialogue session metadata.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "characterId": { "type": "string" },
+        "characterName": { "type": "string" },
+        "sessionType": { "type": "string", "enum": ["AI_BRAIN_TEST", "SIMULATION", "LIVE"] },
+        "messageCount": { "type": "integer" },
+        "lastMessagePreview": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "characterId", "characterName", "sessionType", "messageCount", "createdAt", "updatedAt"]
+    },
+    "ConversationMessage": {
+      "title": "ConversationMessage",
+      "description": "Individual message inside a conversation or simulation session.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "sessionId": { "type": "string" },
+        "characterId": { "type": "string" },
+        "role": { "type": "string", "enum": ["USER", "VIEWER", "HOST", "SYSTEM"] },
+        "senderName": { "type": "string" },
+        "content": { "type": "string" },
+        "category": { "type": "string" },
+        "simulated": { "type": "boolean" },
+        "latencyMs": { "type": "integer" },
+        "groundedDocIds": { "type": "array" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "sessionId", "characterId", "role", "senderName", "content", "simulated", "latencyMs", "createdAt"]
+    },
+    "AutonomousLiveConfig": {
+      "title": "AutonomousLiveConfig",
+      "description": "Autonomous livestream orchestration settings across Greeting, Interactive, Proactive, and Continuation modes.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "characterId": { "type": "string" },
+        "enabled": { "type": "boolean" },
+        "currentMode": { "type": "string", "enum": ["GREETING", "INTERACTIVE", "PROACTIVE", "CONTINUATION"] },
+        "openingScript": { "type": "string" },
+        "closingScript": { "type": "string" },
+        "quietPeriodSeconds": { "type": "integer" },
+        "speechIntervalSeconds": { "type": "integer" },
+        "maxSessionDurationMinutes": { "type": "integer" },
+        "scheduledTimeLabel": { "type": "string" },
+        "selectedTopics": { "type": "array" },
+        "customTopicInstructions": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "characterId", "enabled", "currentMode", "quietPeriodSeconds", "speechIntervalSeconds", "maxSessionDurationMinutes", "selectedTopics", "createdAt", "updatedAt"]
+    },
+    "LivestreamSession": {
+      "title": "LivestreamSession",
+      "description": "Persistent livestream or simulation session metrics with clear simulated vs real separation.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "characterId": { "type": "string" },
+        "characterName": { "type": "string" },
+        "platform": { "type": "string", "enum": ["SIMULATOR", "TIKTOK_LIVE", "YOUTUBE_LIVE"] },
+        "simulated": { "type": "boolean" },
+        "status": { "type": "string", "enum": ["PREPARING", "ACTIVE", "PAUSED", "ENDED", "EMERGENCY_STOPPED"] },
+        "durationSeconds": { "type": "integer" },
+        "commentsCount": { "type": "integer" },
+        "questionsCount": { "type": "integer" },
+        "aiResponsesCount": { "type": "integer" },
+        "filteredSpamCount": { "type": "integer" },
+        "avgLatencyMs": { "type": "integer" },
+        "estimatedTokens": { "type": "integer" },
+        "estimatedCostUsd": { "type": "number" },
+        "errorCount": { "type": "integer" },
+        "startedAt": { "type": "string", "format": "date-time" },
+        "endedAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "characterId", "characterName", "platform", "simulated", "status", "durationSeconds", "commentsCount", "questionsCount", "aiResponsesCount", "filteredSpamCount", "avgLatencyMs", "estimatedTokens", "estimatedCostUsd", "errorCount", "startedAt", "updatedAt"]
+    },
+    "IntegrationSetting": {
+      "title": "IntegrationSetting",
+      "description": "Non-secret integration metadata, status, and last connection test result for modular external providers.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "providerKey": { "type": "string", "enum": ["GEMINI_AI_LOGIC", "FUTURE_LLM", "HEYGEN_LIVE_AVATAR", "BYTEPLUS_AI_LIVE", "ANDROID_TTS", "ELEVENLABS_TTS", "TIKTOK_LIVE", "YOUTUBE_LIVE"] },
+        "category": { "type": "string", "enum": ["LLM", "AVATAR", "VOICE", "LIVESTREAM"] },
+        "displayName": { "type": "string" },
+        "status": { "type": "string", "enum": ["CONNECTED", "UNCONFIGURED", "MISSING_CREDENTIALS", "ERROR", "SIMULATION_ONLY"] },
+        "endpointUrl": { "type": "string" },
+        "configNotes": { "type": "string" },
+        "lastError": { "type": "string" },
+        "lastCheckedAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "providerKey", "category", "displayName", "status", "createdAt", "updatedAt"]
+    },
+    "UsageRecord": {
+      "title": "UsageRecord",
+      "description": "Per-inference API usage and estimated cost record.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "sessionId": { "type": "string" },
+        "provider": { "type": "string" },
+        "modelName": { "type": "string" },
+        "operation": { "type": "string" },
+        "promptTokensEst": { "type": "integer" },
+        "outputTokensEst": { "type": "integer" },
+        "estimatedCostUsd": { "type": "number" },
+        "latencyMs": { "type": "integer" },
+        "simulated": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "provider", "modelName", "operation", "promptTokensEst", "outputTokensEst", "estimatedCostUsd", "latencyMs", "simulated", "createdAt"]
+    },
+    "SystemLog": {
+      "title": "SystemLog",
+      "description": "Operational safety, connection, and emergency stop audit log.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "level": { "type": "string", "enum": ["INFO", "WARNING", "ERROR", "SAFETY"] },
+        "module": { "type": "string" },
+        "message": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "level", "module", "message", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Owner profile and global studio preferences."
+    },
+    "/users/{userId}/characters/{characterId}": {
+      "schema": { "$ref": "#/entities/VirtualHostCharacter" },
+      "description": "User-owned AI virtual host characters."
+    },
+    "/users/{userId}/ai_personalities/{personalityId}": {
+      "schema": { "$ref": "#/entities/AiBrainConfig" },
+      "description": "AI Brain personality, system prompt, and moderation settings per character."
+    },
+    "/users/{userId}/knowledge_documents/{docId}": {
+      "schema": { "$ref": "#/entities/KnowledgeDocument" },
+      "description": "Uploaded or authored knowledge documents."
+    },
+    "/users/{userId}/knowledge_chunks/{chunkId}": {
+      "schema": { "$ref": "#/entities/KnowledgeChunk" },
+      "description": "Indexed knowledge chunks for modular RAG retrieval."
+    },
+    "/users/{userId}/conversation_sessions/{sessionId}": {
+      "schema": { "$ref": "#/entities/ConversationSession" },
+      "description": "AI Brain testing and live conversation sessions."
+    },
+    "/users/{userId}/conversation_messages/{messageId}": {
+      "schema": { "$ref": "#/entities/ConversationMessage" },
+      "description": "Persistent messages for conversation testing and livestream interactions."
+    },
+    "/users/{userId}/autonomous_configs/{configId}": {
+      "schema": { "$ref": "#/entities/AutonomousLiveConfig" },
+      "description": "Autonomous livestream orchestration settings per character."
+    },
+    "/users/{userId}/livestream_sessions/{sessionId}": {
+      "schema": { "$ref": "#/entities/LivestreamSession" },
+      "description": "Simulated and real livestream session history and metrics."
+    },
+    "/users/{userId}/integration_settings/{providerId}": {
+      "schema": { "$ref": "#/entities/IntegrationSetting" },
+      "description": "Provider status and non-secret configuration metadata."
+    },
+    "/users/{userId}/usage_records/{recordId}": {
+      "schema": { "$ref": "#/entities/UsageRecord" },
+      "description": "Estimated AI usage and operating cost telemetry."
+    },
+    "/users/{userId}/system_logs/{logId}": {
+      "schema": { "$ref": "#/entities/SystemLog" },
+      "description": "Safety, error, and connection audit log."
+    }
+  }
+}
